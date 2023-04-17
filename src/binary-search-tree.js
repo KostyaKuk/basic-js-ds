@@ -6,88 +6,125 @@ const { NotImplementedError } = require('../extensions/index.js');
 * Implement simple binary search tree according to task description
 * using Node from extensions
 */
-class BinarySearchTree {
-  constructor(data = null) {
-    this.rootNode = null;
+
+class Node {
+  constructor(data, left = null, right = null) {
+      this.data = data
+      this.left = left
+      this.right = right
   }
+}
+
+class BinarySearchTree {
+  constructor() {
+    this.global = null;
+}
 
   root() {
-    return this.rootNode;
+    return this.global;
   }
 
-  add(data) {
-    this.rootNode = addInside(this.rootNode, data);
+  add( data ) {
+    this.global = addData(this.global, data);
 
-    function addInside(node, data) {
-      if (!node) {
-        return new Node(data)
+    function addData(node,data){
+      if (node === null) {
+        return new Node(data);
+    }
+       if (node.data === data) {
+         return node;
+    }
+       if (data < node.data) {
+          node.left = addData(node.left, data);
+    }
+        if (data > node.data) {
+            node.right = addData(node.right, data);
+    } 
+return node
+    }
+    }
+
+  has( data ) {
+    let current = this.global;
+    while (current){
+      if (data === current.data){
+        return true;
       }
+      data < current.data ? current = current.left : current = current.right
+    }
+       return false
+    }
 
-      if (node.data === data) {
-        return node;
+  find( data ) {
+    let current = this.global
+    while (current.data !== data) {
+        if (data < current.data) {
+            current = current.left
+        } else {
+            current = current.right
+        }
+        if (current === null) {
+            return null
+        }
+    }
+    return current
+}
+
+remove(data) {
+  this.root = removeData(this.global, data);
+
+  function removeData(node, data) {
+      if (!node) {
+          return null;
       }
 
       if (data < node.data) {
-        node.left = addInside(node.left, data);
+          node.left = removeData(node.left, data);
+          return node;
+      } else if (data > node.data) {
+          node.right = removeData(node.right, data);
+          return node;
       } else {
-        node.right = addInside(node.right, data);
-      }
+          if (node.left === null && node.right === null) {
+              return null;
+          }
+          if (node.left === null) {
+             node = node.right
+             return node
+          }
+          if (node.right === null) {
+            node = node.left
+            return node
+          }
 
-      return node;
-    }
+          let minRight = node.right;
+          while (minRight.left) {
+              minRight = minRight.left;
+          }
+          node.data = minRight.data;
+          node.right = removeData(node.right, minRight.data);
+
+          return node;
+      }
   }
-
-  has(data) {
-    return findInside(this.rootNode, data);
-
-    function findInside(node, data) {
-      if (!node) {
-        return false
-      }
-
-      if (node.data === data) {
-        return true;
-      }
-
-      return data < node.data ?
-        findInside(node.left, data) :
-        findInside(node.right, data);
-    }
-  }
-
-  find(data) {
-    return findNode(this.rootNode, data);
-
-    function findNode(node, data) {
-      if (!node) {
-        return null;
-      }
-
-      if (node.data === data) {
-        return node;
-      }
-
-      return data < node.data ?
-        findNode(node.left, data) :
-        findNode(node.right, data);
-    }
-  }
-  
-  remove(/* data */) {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
-  }
-
+}
   min() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+    let current = this.global
+        while (current.left !== null) {
+            current = current.left
+        }
+        return current.data
   }
 
   max() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+    let current = this.global
+    while (current.right !== null) {
+        current = current.right
+    }
+    return current.data
   }
 }
+
 
 module.exports = {
   BinarySearchTree
